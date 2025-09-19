@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import ExpenseCard from '../ExpenseCard/ExpenseCard';
-import type { ExpenseCardProps } from '../ExpenseCard/ExpenseCard';
+import type { ExpenseCardProps, ExpenseCategory } from '../ExpenseCard/ExpenseCard';
 import './ExpenseList.css';
 
 // Type for expense data (reusing interface from ExpenseCard)
 type Expense = ExpenseCardProps;
+type FilterOption = 'All' | ExpenseCategory;
 
 /**
  * Props interface for ExpenseList component
@@ -14,6 +15,7 @@ type Expense = ExpenseCardProps;
  */
 interface ExpenseListProps {
   expenses: Expense[];  // FIXED: Required prop, receives current state from App
+  onDeleteExpense?: (id:number) => void;
 }
 
 /**
@@ -31,10 +33,10 @@ interface ExpenseListProps {
  * @param {ExpenseListProps} props - Component props
  * @returns {JSX.Element} Rendered expense list with filtering controls
  */
-const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
+const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDeleteExpense }) => {
   
   // ONLY manage UI state (filtering) - NOT expense data
-  const [filterCategory, setFilterCategory] = useState<string>('All');
+  const [filterCategory, setFilterCategory] = useState<FilterOption>('All');
 
   // Filter expenses from props (not local state)
   const filteredExpenses = filterCategory === 'All' 
@@ -52,10 +54,10 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
    * @param {React.ChangeEvent<HTMLSelectElement>} event - Select change event
    */
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCategory(event.target.value);
+    setFilterCategory(event.target.value as FilterOption);
   };
 
-  return (
+   return (
     <div className="expense-list">
       <div className="expense-controls">
         <h2>Your Expenses</h2>
@@ -84,6 +86,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
       </div>
 
       <div className="expense-items">
+      // UPDATED
         {filteredExpenses.length === 0 ? (
           <p className="no-expenses">
             No expenses found. Add some expenses to get started!
@@ -93,6 +96,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
             <ExpenseCard
               key={expense.id}
               {...expense}
+              onDelete={onDeleteExpense}
             />
           ))
         )}

@@ -1,14 +1,21 @@
 import React from 'react';
 import './ExpenseCard.css';
 
+export type ExpenseCategory = 'Food' | 'Transportation' | 'Entertainment' | 'Other';
+
 // TypeScript interface defines the structure of props this component expects
 // This acts like a contract - any parent component must provide these exact properties
 export interface ExpenseCardProps {
   id: number;              // Unique identifier for each expense
   description: string;     // What the expense was for (e.g., "Lunch at Joe's Pizza")
   amount: number;         // Cost in dollars (will be formatted to show currency)
-  category: string;       // Type of expense (e.g., "Food", "Transportation")
+  category: ExpenseCategory;       // Type of expense (e.g., "Food", "Transportation")
   date: string;          // When the expense occurred (formatted as string)
+
+  // Optional props (can be provided or omitted)
+  onDelete?: (id: number) => void; // Callback for deleting this expense
+  highlighted?: boolean;
+  showCategory?: boolean;
 }
 
 /**
@@ -26,7 +33,10 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   description, 
   amount, 
   category, 
-  date 
+  date,
+  highlighted = false,
+  showCategory = true,
+  onDelete 
 }) => {
     
   // Format currency for professional display
@@ -42,10 +52,22 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
     year: 'numeric'
   });
 
+  //Handle delete action
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(id);
+    }
+  };
+
   return (
-    <article className="expense-card">
+    // UPDATED
+    <article className={`expense-card ${highlighted ? 'expense-card--highlighted' : ''}`}>
       <div className="expense-header">
-        <span className="expense-category">{category}</span>
+        // UPDATED
+        {showCategory && (
+          <span className="expense-category">{category}</span>
+        )}
         <time className="expense-date" dateTime={date}>
           {formattedDate}
         </time>
@@ -54,9 +76,37 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
       <div className="expense-body">
         <h3 className="expense-description">{description}</h3>
         <p className="expense-amount">{formattedAmount}</p>
+        
+        // UPDATED
+        {onDelete && (
+          <button 
+            className="expense-delete" 
+            onClick={handleDelete}
+            aria-label="Delete expense"
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              background: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '24px',
+              height: '24px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            ×
+          </button>
+        )}
       </div>
     </article>
   );
 };
+
 
 export default ExpenseCard;
