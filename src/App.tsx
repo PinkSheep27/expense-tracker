@@ -4,7 +4,6 @@ import ExpenseSummary from './components/ExpenseSummary/ExpenseSummary';
 import ExpenseList from './components/ExpenseList/ExpenseList';
 import ExpenseForm from './components/ExpenseForm/ExpenseForm';
 import type { ExpenseCategory } from './components/ExpenseCard/ExpenseCard';
-import './App.css';
 
 // Type for expense data
 interface Expense {
@@ -15,16 +14,6 @@ interface Expense {
   date: string;
 }
 
-/**
- * Root application component managing global expense state and component coordination
- * IMPORTANT: This is the SINGLE SOURCE OF TRUTH for all expense data
- */
-
-/**
-   * Adds new expense to application state
-   * This function is passed down to ExpenseForm component
-   * @param {Omit<Expense, 'id'>} expenseData - New expense data without ID
-   */
 function App() {
   const [expenses, setExpenses] = useState<Expense[]>([
     {
@@ -65,14 +54,18 @@ function App() {
   const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
-    <div className="App">
-      <div className="app-container">
+    <div className="
+      min-h-screen bg-slate-50
+    ">
+      <div className="
+        max-w-6xl mx-auto p-5
+      ">
         <Header 
           title="Expense Tracker" 
           subtitle="Manage your spending with confidence" 
         />
         
-        <main className="app-main">
+        <main>
           <ExpenseSummary 
             totalAmount={totalAmount}
             expenseCount={expenses.length}
