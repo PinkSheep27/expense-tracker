@@ -1,38 +1,16 @@
 import React, { useState } from 'react';
 import ExpenseCard from '../ExpenseCard/ExpenseCard';
 import type { ExpenseCardProps, ExpenseCategory } from '../ExpenseCard/ExpenseCard';
-import './ExpenseList.css';
 
 // Type for expense data (reusing interface from ExpenseCard)
 type Expense = ExpenseCardProps;
 type FilterOption = 'All' | ExpenseCategory;
 
-/**
- * Props interface for ExpenseList component
- * FIXED: expenses is now required (not optional initialExpenses)
- * @interface ExpenseListProps
- * @property {Expense[]} expenses - Current expense data from parent component (App.tsx)
- */
 interface ExpenseListProps {
   expenses: Expense[];  // FIXED: Required prop, receives current state from App
   onDeleteExpense?: (id:number) => void;
 }
 
-/**
- * ExpenseList Component - FIXED VERSION
- * 
- * IMPORTANT CHANGE: This component no longer manages expense data in local state.
- * It receives expenses as props from App.tsx and only manages UI state (filtering).
- * 
- * This fixes the "duplicate state" bug where:
- * - App.tsx had expense state (updated by form)
- * - ExpenseList had separate expense state (never updated)
- * 
- * Now there's a SINGLE SOURCE OF TRUTH in App.tsx
- * 
- * @param {ExpenseListProps} props - Component props
- * @returns {JSX.Element} Rendered expense list with filtering controls
- */
 const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDeleteExpense }) => {
   
   // ONLY manage UI state (filtering) - NOT expense data
@@ -49,26 +27,39 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDeleteExpense }) 
     0
   );
 
-  /**
-   * Handles category filter change from select dropdown
-   * @param {React.ChangeEvent<HTMLSelectElement>} event - Select change event
-   */
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCategory(event.target.value as FilterOption);
   };
 
    return (
-    <div className="expense-list">
-      <div className="expense-controls">
-        <h2>Your Expenses</h2>
+    <div className="
+    bg-white shadow-sm rounded-lg p-6 mb-8
+    border border-gray-200
+    ">
+      <div className="space-y-3">
+        <h2 className="
+          text-2xl font-bold text-gray-900 mb-6
+          ">
+          Your Expenses
+        </h2>
         
-        <div className="filter-controls">
-          <label htmlFor="category-filter">Filter by category:</label>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <label className="text-sm font-medium text-gray-700"
+          htmlFor="category-filter">
+            Filter by category:
+            </label>
           <select 
             id="category-filter"
             value={filterCategory}
             onChange={handleCategoryChange}
-            className="category-select"
+            className="
+              px-3 py-2 border border-gray-300 rounded-md
+              text-sm bg-white text-gray-700
+              cursor-pointer transition-colors duration-200
+              hoover:boder-blue-500
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+              focu:border-transparent
+            "
           >
             <option value="All">All Categories</option>
             <option value="Food">Food</option>
@@ -79,16 +70,21 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onDeleteExpense }) 
         </div>
       </div>
 
-      <div className="expense-summary">
-        <p>
-          Total: ${filteredTotal.toFixed(2)} ({filteredExpenses.length} expenses)
+      <div className="
+        flex justify-between items-center mb-6 p-4
+        bg-gray-50 rounded-lg border border-gray-200
+      ">
+        <p className="text-lg font-bold text-green-600">
+          Total: ${filteredTotal.toFixed(2)} 
+          <span className="text-sm text-gray-500">
+            ({filteredExpenses.length} Expenses)
+          </span>
         </p>
       </div>
 
-      <div className="expense-items">
-      // UPDATED
+      <div className="flex flex-col gap-4">
         {filteredExpenses.length === 0 ? (
-          <p className="no-expenses">
+          <p className="text-center text-gray-500 py-10 px-5">
             No expenses found. Add some expenses to get started!
           </p>
         ) : (
